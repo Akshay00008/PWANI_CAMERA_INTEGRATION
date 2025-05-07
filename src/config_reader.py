@@ -7,6 +7,8 @@ def get_rtsp_url(status: str, view: str) -> str:
     print(config_path)
     config.read(config_path)
     print("config")
+    print("********************")
+    print(config[status][view])
     try:
         return config[status][view]
     except KeyError:
