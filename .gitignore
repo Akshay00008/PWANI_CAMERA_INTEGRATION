@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+venv/
+env/
+*.venv/
+
+# Config and other files containing sensitive information
+config/*.ini
+database/*.txt
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Ignore data files
+data/
+*.mp4
+
+# Ignore images
+images/screenshots/raw/
+images/screenshots/edited/
+images/violations/
+images/
+*.png
+*.jpg
+*.jpeg
+
+# Ignore model files
+models/
+*.pt
+
+# Ignore compiled Python files
+*.pyc
+*.pyo
+
+# Ignore Docker-related files
+*.dockerignore
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
