@@ -55,7 +55,7 @@ def screenshot(request: ScreenshotRequest):
     else:
         filename = f"main_gate_truck_{now}.png" 
 
-    filepath = os.path.join("apps/images", filename)
+    filepath = os.path.join("/apps/camera/PWANI_CAMERA_INTEGRATION/images", filename)
     
     cv2.imwrite(filepath, frame)
 
