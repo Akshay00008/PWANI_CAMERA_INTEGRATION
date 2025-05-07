@@ -9,7 +9,7 @@ def get_rtsp_url(stage: str, status: str, view: str) -> str:
     section_key = f"{stage}_{view}_{status}"
 
     try:
-        return config[section_key]["path"]
+        return config[section_key]["path"], config[section_key]["zoom"]
     except KeyError as e:
         # Log which part failed: section or key
         if section_key not in config:
@@ -19,6 +19,6 @@ def get_rtsp_url(stage: str, status: str, view: str) -> str:
         
         # Fallback to default
         try:
-            return config["default"]["path"]
+            return config["default"]["path"], config["default"]["zoom"]
         except KeyError:
             raise ValueError(f"No valid config found for key='{section_key}', and no [default] path specified.")

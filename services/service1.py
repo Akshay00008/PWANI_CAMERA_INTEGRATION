@@ -7,6 +7,7 @@ import os
 import cv2
 import numpy as np
 from datetime import datetime
+import re
 
 router = APIRouter()
 
@@ -23,18 +24,23 @@ def screenshot(request: ScreenshotRequest):
     if request.stage == "WB2":
         print(f"🚚 The truck is {request.status} {request.stage}, requesting {request.view} view.")
     else:
-        print(f"🚚 The truck is at the {request.stage}, requesting view.")
+        print(f"🚚 The truck is at the main gate, requesting view.")
 
     try:
-        rtsp_url = get_rtsp_url(request.stage, request.status, request.view)
+        rtsp_url, focus = get_rtsp_url(request.stage, request.status, request.view)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+    match = re.findall(r'\d+', focus)
+    x1, x2, y1, y2 = map(int, match)
     
     print(f"RTSP URL: {rtsp_url}")
 
     # shorten_rtsp = get_last_part(rtsp_url)
 
     frame = capture_screenshot(rtsp_url)
+
+    frame = frame[x1:x2, y1:y2]
 
     if frame is None or frame.size == 0:
         raise HTTPException(status_code=500, detail="Failed to capture frame. RTSP stream might be down.")
@@ -47,7 +53,7 @@ def screenshot(request: ScreenshotRequest):
     if request.stage == "WB2":
         filename = f"{request.stage}_{request.status}_truck_{request.view}_{now}.png" 
     else:
-        filename = f"{request.stage}_truck_{now}.png" 
+        filename = f"main_gate_truck_{now}.png" 
 
     filepath = os.path.join("apps/images", filename)
     
