@@ -42,8 +42,8 @@ def screenshot(request: ScreenshotRequest):
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{request.status}_truck_{request.view}_{now}.png" 
 
-    filepath = os.path.join("images", filename)
+    filepath = os.path.join("apps/images", filename)
     
     cv2.imwrite(filepath, frame)
 
-    return {"img_path": filename}
+    return {"img_path": filepath}
