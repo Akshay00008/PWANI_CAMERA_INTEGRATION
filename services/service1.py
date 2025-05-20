@@ -11,7 +11,7 @@ import time
 
 router = APIRouter()
 
-SAVE_DIR = os.path.join(os.getcwd(), 'images')
+SAVE_DIR = os.path.join(os.getcwd(), "apps", "camera", "PWANI_CAMERA_INTEGRATION", 'images')
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 class ScreenshotRequest(BaseModel):
@@ -59,10 +59,19 @@ def screenshot(request: ScreenshotRequest):
     else:
         filename = f"main_gate_truck_{now}.webp" 
 
-    filepath = os.path.join("/apps/camera/PWANI_CAMERA_INTEGRATION/images", filename)
-    
-    cv2.imwrite(filepath, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
+    # filepath = os.path.join("/apps/camera/PWANI_CAMERA_INTEGRATION/images", filename)
 
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    filepath2 = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
+
+    filepath = os.path.join(ROOT_DIR, filepath2)    
+    
+    ok = cv2.imwrite(filepath, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
+    if not ok:
+        raise HTTPException(status_code=500, detail=f"Could not save image to {filepath}")
+
+    # print(f"Image saved to {filepath}")
     
     t3 = time.time()
 
@@ -72,4 +81,4 @@ def screenshot(request: ScreenshotRequest):
     f"save: {t3 - t2:.2f}s → total: {t3 - t0:.2f}s"
     )
 
-    return {"img_path": filename}
+    return {"img_path": filepath2}
