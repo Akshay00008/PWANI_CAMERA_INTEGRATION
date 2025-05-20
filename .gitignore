@@ -21,6 +21,8 @@ data/
 *.mp4
 
 # Ignore images
+apps/camera/PWANI_CAMERA_INTEGRATION/images/
+apps/
 images/screenshots/raw/
 images/screenshots/edited/
 images/violations/
@@ -28,6 +30,7 @@ images/
 *.png
 *.jpg
 *.jpeg
+*.webp
 
 # Ignore model files
 models/

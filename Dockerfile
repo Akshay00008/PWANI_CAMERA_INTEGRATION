@@ -17,7 +17,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the necessary ports for the services
-EXPOSE 5001
+EXPOSE 5002
 
 VOLUME ["/app/images/"]
 

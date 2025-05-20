@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from src.capture_screenshot import capture_screenshot
-from src.shorten_rtsp import get_last_part
 from src.config_reader import get_rtsp_url
 import os
 import cv2
 import numpy as np
 from datetime import datetime
 import re
+import time
 
 router = APIRouter()
 
@@ -21,10 +21,11 @@ class ScreenshotRequest(BaseModel):
 
 @router.post("")
 def screenshot(request: ScreenshotRequest):
-    if request.stage == "WB2":
+    t0 = time.time()
+    if request.stage in ["WB2", "WB1", "main_gate", "offloading"]:
         print(f"🚚 The truck is {request.status} {request.stage}, requesting {request.view} view.")
     else:
-        print(f"🚚 The truck is at the main gate, requesting view.")
+        print(f"🚚 The truck is at the main gate, requesting view. Providing main gate view.")
 
     try:
         rtsp_url, focus = get_rtsp_url(request.stage, request.status, request.view)
@@ -33,12 +34,12 @@ def screenshot(request: ScreenshotRequest):
     
     match = re.findall(r'\d+', focus)
     x1, x2, y1, y2 = map(int, match)
-    
+        
     print(f"RTSP URL: {rtsp_url}")
 
-    # shorten_rtsp = get_last_part(rtsp_url)
-
     frame = capture_screenshot(rtsp_url)
+    t1 = time.time()
+
 
     frame = frame[x1:x2, y1:y2]
 
@@ -49,14 +50,26 @@ def screenshot(request: ScreenshotRequest):
         frame = np.frombuffer(frame, dtype=np.uint8)
         frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
+    t2 = time.time()
+    
+
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
-    if request.stage == "WB2":
-        filename = f"{request.stage}_{request.status}_truck_{request.view}_{now}.png" 
+    if request.stage in ["WB2", "WB1", "main_gate"]:
+        filename = f"{request.stage}_{request.status}_truck_{request.view}_{now}.webp" 
     else:
-        filename = f"main_gate_truck_{now}.png" 
+        filename = f"main_gate_truck_{now}.webp" 
 
     filepath = os.path.join("/apps/camera/PWANI_CAMERA_INTEGRATION/images", filename)
     
-    cv2.imwrite(filepath, frame)
+    cv2.imwrite(filepath, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
 
-    return {"img_path": filepath}
+    
+    t3 = time.time()
+
+    print(
+    f"[Timing] capture: {t1 - t0:.2f}s, "
+    f"decode: {t2 - t1:.2f}s, "
+    f"save: {t3 - t2:.2f}s → total: {t3 - t0:.2f}s"
+    )
+
+    return {"img_path": filename}
