@@ -38,7 +38,7 @@ def fetch_cameras():
     return {str(cam_id): link for cam_id, link in cameras}
 
 def generate_frames(rtsp_link: str, stop_event: threading.Event):
-    rtsp_link = rtsp_link[:-1] + '2'  # Modify last char (as in original code)
+    # rtsp_link = rtsp_link[:-1] + '2'  # Modify last char (as in original code)
     cap = cv2.VideoCapture(rtsp_link)
 
     while not stop_event.is_set():
