@@ -65,7 +65,9 @@ def screenshot(request: ScreenshotRequest):
 
     filepath2 = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
 
-    filepath = os.path.join(ROOT_DIR, filepath2)   
+    # filepath = os.path.join(ROOT_DIR, filepath2)   
+    filepath = os.path.join(filepath2)   
+    # filepath = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", "apps", "camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
     
     print("Saved to", filepath) 
     
