@@ -15,7 +15,7 @@ router = APIRouter()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Construct full absolute path to the images folder
-SAVE_DIR = os.path.join(BASE_DIR, "camera", "PWANI_CAMERA_INTEGRATION", "images")
+SAVE_DIR = os.path.join(BASE_DIR, "..", "images")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 class ScreenshotRequest(BaseModel):
@@ -66,6 +66,8 @@ def screenshot(request: ScreenshotRequest):
 
     # Construct full absolute file path
     filepath = os.path.join(SAVE_DIR, filename)
+    
+    
 
     print("Saved to", filepath)
 
