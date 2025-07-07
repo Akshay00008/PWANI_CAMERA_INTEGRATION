@@ -67,11 +67,11 @@ def screenshot(request: ScreenshotRequest):
 
     filepath = os.path.join(ROOT_DIR, filepath2)   
     
-    print("Saved to", filepath2) 
+    print("Saved to", filepath) 
     
-    ok = cv2.imwrite(filepath2, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
+    ok = cv2.imwrite(filepath, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
     if not ok:
-        raise HTTPException(status_code=500, detail=f"Could not save image to {filepath2}")
+        raise HTTPException(status_code=500, detail=f"Could not save image to {filepath}")
 
     # print(f"Image saved to {filepath}")
     
