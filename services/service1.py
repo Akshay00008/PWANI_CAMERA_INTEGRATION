@@ -11,7 +11,7 @@ import time
 
 router = APIRouter()
 
-SAVE_DIR = os.path.join(os.getcwd(), "apps", "camera", "PWANI_CAMERA_INTEGRATION", 'images')
+SAVE_DIR = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", 'images')
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 class ScreenshotRequest(BaseModel):
