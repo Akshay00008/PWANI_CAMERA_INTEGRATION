@@ -11,8 +11,14 @@ import time
 
 router = APIRouter()
 
-# Hardcoded absolute path to save images correctly inside your project folder
-SAVE_DIR = os.path.abspath(os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", "images"))
+# Get the base directory of the current file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Move up one level (from services to PWANI_CAMERA_INTEGRATION)
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+
+# Now define the image save directory directly
+SAVE_DIR = os.path.join(PROJECT_ROOT, "images")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 class ScreenshotRequest(BaseModel):
@@ -58,10 +64,13 @@ def screenshot(request: ScreenshotRequest):
         filename = f"{request.stage}_{request.status}_truck_{request.view}_{now}.webp"
     else:
         filename = f"main_gate_truck_{now}.webp"
+        
+    print(PROJECT_ROOT)
 
+    # Construct full absolute file path
     filepath = os.path.join(SAVE_DIR, filename)
 
-    print("Saving image to", filepath)
+    print("Saved to", filepath)
 
     ok = cv2.imwrite(filepath, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
     if not ok:
@@ -75,6 +84,6 @@ def screenshot(request: ScreenshotRequest):
         f"save: {t3 - t2:.2f}s → total: {t3 - t0:.2f}s"
     )
 
-    # Return relative path
+    # Relative path for response
     img_rel_path = os.path.join("camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
     return {"img_path": img_rel_path}
