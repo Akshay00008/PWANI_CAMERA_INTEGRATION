@@ -61,15 +61,17 @@ def screenshot(request: ScreenshotRequest):
 
     # filepath = os.path.join("/apps/camera/PWANI_CAMERA_INTEGRATION/images", filename)
 
-    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     filepath2 = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", "apps", "camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
 
-    filepath = os.path.join(ROOT_DIR, filepath2)    
+    # filepath = os.path.join(ROOT_DIR, filepath2)   
     
-    ok = cv2.imwrite(filepath, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
+    print("Saved to", filepath2) 
+    
+    ok = cv2.imwrite(filepath2, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
     if not ok:
-        raise HTTPException(status_code=500, detail=f"Could not save image to {filepath}")
+        raise HTTPException(status_code=500, detail=f"Could not save image to {filepath2}")
 
     # print(f"Image saved to {filepath}")
     
