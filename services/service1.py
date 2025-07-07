@@ -61,6 +61,8 @@ def screenshot(request: ScreenshotRequest):
         filename = f"{request.stage}_{request.status}_truck_{request.view}_{now}.webp"
     else:
         filename = f"main_gate_truck_{now}.webp"
+        
+    print(BASE_DIR)
 
     # Construct full absolute file path
     filepath = os.path.join(SAVE_DIR, filename)
