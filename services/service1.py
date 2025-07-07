@@ -11,7 +11,11 @@ import time
 
 router = APIRouter()
 
-SAVE_DIR = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", 'images')
+# Get the absolute path to the current file's directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Construct full absolute path to the images folder
+SAVE_DIR = os.path.join(BASE_DIR, "camera", "PWANI_CAMERA_INTEGRATION", "images")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 class ScreenshotRequest(BaseModel):
@@ -22,6 +26,7 @@ class ScreenshotRequest(BaseModel):
 @router.post("")
 def screenshot(request: ScreenshotRequest):
     t0 = time.time()
+
     if request.stage in ["WB2", "WB1", "main_gate", "offloading"]:
         print(f"🚚 The truck is {request.status} {request.stage}, requesting {request.view} view.")
     else:
@@ -31,15 +36,14 @@ def screenshot(request: ScreenshotRequest):
         rtsp_url, focus = get_rtsp_url(request.stage, request.status, request.view)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
     match = re.findall(r'\d+', focus)
     x1, x2, y1, y2 = map(int, match)
-        
+
     print(f"RTSP URL: {rtsp_url}")
 
     frame = capture_screenshot(rtsp_url)
     t1 = time.time()
-
 
     frame = frame[x1:x2, y1:y2]
 
@@ -51,38 +55,30 @@ def screenshot(request: ScreenshotRequest):
         frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
     t2 = time.time()
-    
 
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
     if request.stage in ["WB2", "WB1", "main_gate"]:
-        filename = f"{request.stage}_{request.status}_truck_{request.view}_{now}.webp" 
+        filename = f"{request.stage}_{request.status}_truck_{request.view}_{now}.webp"
     else:
-        filename = f"main_gate_truck_{now}.webp" 
+        filename = f"main_gate_truck_{now}.webp"
 
-    # filepath = os.path.join("/apps/camera/PWANI_CAMERA_INTEGRATION/images", filename)
+    # Construct full absolute file path
+    filepath = os.path.join(SAVE_DIR, filename)
 
-    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    print("Saved to", filepath)
 
-    filepath2 = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
-
-    # filepath = os.path.join(ROOT_DIR, filepath2)   
-    filepath = os.path.join(filepath2)   
-    # filepath = os.path.join("apps", "camera", "PWANI_CAMERA_INTEGRATION", "apps", "camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
-    
-    print("Saved to", filepath) 
-    
     ok = cv2.imwrite(filepath, frame, [cv2.IMWRITE_WEBP_QUALITY, 20])
     if not ok:
         raise HTTPException(status_code=500, detail=f"Could not save image to {filepath}")
 
-    # print(f"Image saved to {filepath}")
-    
     t3 = time.time()
 
     print(
-    f"[Timing] capture: {t1 - t0:.2f}s, "
-    f"decode: {t2 - t1:.2f}s, "
-    f"save: {t3 - t2:.2f}s → total: {t3 - t0:.2f}s"
+        f"[Timing] capture: {t1 - t0:.2f}s, "
+        f"decode: {t2 - t1:.2f}s, "
+        f"save: {t3 - t2:.2f}s → total: {t3 - t0:.2f}s"
     )
 
-    return {"img_path": filepath2}
+    # Relative path for response
+    img_rel_path = os.path.join("camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
+    return {"img_path": img_rel_path}
