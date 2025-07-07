@@ -85,5 +85,5 @@ def screenshot(request: ScreenshotRequest):
     )
 
     # Relative path for response
-    img_rel_path = os.path.join("/camera", "PWANI_CAMERA_INTEGRATION", "images", filename)
-    return {"img_path": img_rel_path}
+    # img_rel_path = os.path.join(filepath)
+    return {"img_path": filepath}
